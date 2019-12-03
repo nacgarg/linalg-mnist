@@ -10,13 +10,13 @@ import numpy as np
 if len(sys.argv) > 1:
     m = Model.load(sys.argv[1])
 else:
-    m = Model(lr=0.00002)
+    m = Model(lr=0.0002)
 
 # Set up training parameters
 data = get_mnist_dataset()
 batch_size = 32
 epochs = 5
-examples = 10000
+examples = 20000
 
 loss_logs = []
 
@@ -51,7 +51,7 @@ for ex in data['test'].take(1000):
 print("Final accuracy on test set: {}".format(sum(results)/len(results)))
 
 # Low pass the loss logs to smoothen the graph
-loss_logs = np.convolve(np.array(loss_logs), np.ones((5,))/5, mode='valid')
+loss_logs = np.convolve(np.array(loss_logs), np.ones((8,))/8, mode='valid')
 
 plt.plot(loss_logs)
 plt.show()

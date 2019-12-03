@@ -49,17 +49,15 @@ class Model():
         return tf.math.softmax(output)
 
     @tf.function
-    def _cost(self, forward, y):
-        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-            logits=forward, labels=y))
+    def _cost(self, pred, actual):
+        return tf.reduce_mean(tf.losses.categorical_crossentropy(actual, pred, from_logits=True))
 
     def train_step(self, x, y):
         ''' Train the network on a single batch '''
         # Compute the loss and gradients of the weights
         with tf.GradientTape() as tape:
             pred = self._forward(x)
-            loss = tf.losses.categorical_crossentropy(
-                y, pred, from_logits=True)
+            loss = self._cost(pred, y)
 
         gradients = tape.gradient(loss, self._trainable_variables)
         del tape
@@ -74,7 +72,7 @@ class Model():
                 num_correct += 1
 
         # Return the loss and accuracy so we can display it
-        return np.mean(loss[0]), num_correct/batch_size
+        return loss, num_correct/batch_size
 
     def predict_class(self, x):
         # Compute a forward pass, and look up with predicted class
