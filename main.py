@@ -1,7 +1,6 @@
 from data import get_mnist_dataset, process_example, process_batch
 from model import Model
 import tensorflow as tf
-from tqdm import tqdm
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
@@ -26,9 +25,7 @@ loss_logs = []
 for i in range(epochs):
     num_correct = 0
 
-    print("Epoch: {}".format(i))
-
-    for j, ex in tqdm(enumerate(train_data.batch(batch_size).take(int(examples/batch_size)))):
+    for j, ex in enumerate(train_data.batch(batch_size).take(int(examples/batch_size))):
         x, y = process_batch(ex)
 
         loss, accuracy = m.train_step(x, y)
@@ -36,11 +33,11 @@ for i in range(epochs):
         num_correct += accuracy * batch_size
         loss_logs.append(loss)
 
-        if j % 10 == 1:
-            print("Loss: {}, Accuracy {}".format(
-                loss, num_correct/(batch_size*(j+1))))
+        print("Epoch {}, {}/{}".format(i, (j+1)*batch_size, examples) + " "*10 + "Loss: {}, Accuracy {}".format(
+            loss, num_correct/(batch_size*(j+1))), end='\r', flush=True)
     # Save the model after every epoch
     m.save("epoch-{}.pkl".format(i))
+    print()  # Print empty newline
 
 # Evaluate the model on the test set
 results = []
