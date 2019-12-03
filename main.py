@@ -18,6 +18,8 @@ batch_size = 32
 epochs = 5
 examples = 20000
 
+train_data = data['train'].shuffle(examples, reshuffle_each_iteration=False)
+
 loss_logs = []
 
 # Main training loop - iterate through data and call train_step
@@ -26,7 +28,7 @@ for i in range(epochs):
 
     print("Epoch: {}".format(i))
 
-    for j, ex in tqdm(enumerate(data['train'].batch(batch_size).take(int(examples/batch_size)))):
+    for j, ex in tqdm(enumerate(train_data.batch(batch_size).take(int(examples/batch_size)))):
         x, y = process_batch(ex)
 
         loss, accuracy = m.train_step(x, y)
@@ -50,6 +52,19 @@ for ex in data['test'].take(1000):
 
 print("Final accuracy on test set: {}".format(sum(results)/len(results)))
 
+# Display a few images with predictions because it's fun
+print("\n"*10)
+for ex in data['test'].shuffle(100).take(5):
+    x, _ = process_example(ex)
+    pred = m.predict_class(x)
+    print("Predicted: {}".format(pred))
+    X = x.reshape((28, 28))
+    plt.gray()
+    plt.imshow(X)
+    plt.waitforbuttonpress()
+    plt.close()
+
+plt.close()
 # Low pass the loss logs to smoothen the graph
 loss_logs = np.convolve(np.array(loss_logs), np.ones((8,))/8, mode='valid')
 
