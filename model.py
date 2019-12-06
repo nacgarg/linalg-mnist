@@ -13,7 +13,7 @@ class Model():
         lr: Learning rate. Default 0.00001
     '''
 
-    def __init__(self, n_input=28*28, n_hidden=800, n_output=10, lr=0.001):
+    def __init__(self, n_input=28*28, n_hidden=800, n_output=10, lr=0.001, dropout=0.1):
         # Initialize dimension parameters
         self._n_input = n_input
         self._n_hidden = n_hidden
@@ -21,6 +21,9 @@ class Model():
 
         # Initialize learning rate
         self._lr = lr
+
+        # Initilize dropout percentage
+        self._dropout = dropout
 
         # Initialize randomized weight and bias matricies
         self._w_hidden = tf.Variable(
@@ -45,6 +48,9 @@ class Model():
         ''' Returns forward pass of the network '''
 
         hidden = self._dense(x, self._w_hidden, self._b_hidden)
+        # Dropout
+        hidden *= np.random.binomial([np.ones((x.shape[0], 1, self._n_hidden))],
+                                     1-self._dropout)[0] * (1.0/(1-self._dropout))
         output = self._dense(hidden, self._w_output, self._b_output)
         return tf.math.softmax(output)
 
@@ -68,7 +74,8 @@ class Model():
         batch_size = y.shape[0]
         num_correct = 0
         for i in range(batch_size):
-            if np.argmax(y[i]) == np.argmax(pred[i]):
+            predicted_class = np.argmax(pred[i])
+            if np.argmax(y[i]) == predicted_class:
                 num_correct += 1
 
         # Return the loss and accuracy so we can display it

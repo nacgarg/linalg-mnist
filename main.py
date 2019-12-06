@@ -9,13 +9,13 @@ import numpy as np
 if len(sys.argv) > 1:
     m = Model.load(sys.argv[1])
 else:
-    m = Model(lr=0.0002)
+    m = Model(lr=0.001)
 
 # Set up training parameters
 data = get_mnist_dataset()
 batch_size = 32
-epochs = 5
-examples = 20000
+epochs = 15
+examples = 60000
 
 train_data = data['train'].shuffle(examples, reshuffle_each_iteration=False)
 
@@ -51,7 +51,7 @@ print("Final accuracy on test set: {}".format(sum(results)/len(results)))
 
 # Display a few images with predictions because it's fun
 print("\n"*10)
-for ex in data['test'].shuffle(100).take(5):
+for ex in data['test'].shuffle(100).take(10):
     x, _ = process_example(ex)
     pred = m.predict_class(x)
     print("Predicted: {}".format(pred))
@@ -63,7 +63,7 @@ for ex in data['test'].shuffle(100).take(5):
 
 plt.close()
 # Low pass the loss logs to smoothen the graph
-loss_logs = np.convolve(np.array(loss_logs), np.ones((8,))/8, mode='valid')
+loss_logs = np.convolve(np.array(loss_logs), np.ones((12,))/12, mode='valid')
 
 plt.plot(loss_logs)
 plt.show()
