@@ -47,7 +47,7 @@ class Model():
     def _forward(self, x):
         ''' Returns forward pass of the network '''
 
-        hidden = self._dense(x, self._w_hidden, self._b_hidden)
+        hidden =  tf.math.sigmoid(self._dense(x, self._w_hidden, self._b_hidden))
         # Dropout
         hidden *= np.random.binomial([np.ones((x.shape[0], 1, self._n_hidden))],
                                      1-self._dropout)[0] * (1.0/(1-self._dropout))
