@@ -1,6 +1,8 @@
 from data import get_mnist_dataset, process_example, process_batch
 from model import Model
 import tensorflow as tf
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
@@ -14,7 +16,7 @@ else:
 # Set up training parameters
 data = get_mnist_dataset()
 batch_size = 32
-epochs = 15
+epochs = 10
 examples = 60000
 
 train_data = data['train'].shuffle(examples, reshuffle_each_iteration=False)
